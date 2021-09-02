@@ -1,0 +1,269 @@
+object Form1: TForm1
+  Left = 192
+  Top = 114
+  BorderStyle = bsSingle
+  Caption = ':: zonk : Bot ::'
+  ClientHeight = 227
+  ClientWidth = 478
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'MS Sans Serif'
+  Font.Style = []
+  Menu = MainMenu1
+  OldCreateOrder = False
+  OnCreate = FormCreate
+  PixelsPerInch = 96
+  TextHeight = 13
+  object StatusBar1: TStatusBar
+    Left = 0
+    Top = 208
+    Width = 478
+    Height = 19
+    Panels = <>
+  end
+  object PageControl1: TPageControl
+    Left = 0
+    Top = 0
+    Width = 478
+    Height = 208
+    ActivePage = TabSheet1
+    Align = alClient
+    Style = tsFlatButtons
+    TabOrder = 1
+    object TabSheet1: TTabSheet
+      Caption = 'Konsole'
+      object Panel1: TPanel
+        Left = 0
+        Top = 0
+        Width = 470
+        Height = 177
+        Align = alClient
+        BevelInner = bvRaised
+        BevelOuter = bvLowered
+        TabOrder = 0
+        object RichEdit1: TRichEdit
+          Left = 2
+          Top = 2
+          Width = 466
+          Height = 151
+          Font.Charset = ANSI_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -12
+          Font.Name = 'Terminal'
+          Font.Style = [fsBold]
+          ParentFont = False
+          ScrollBars = ssVertical
+          TabOrder = 0
+        end
+        object Edit1: TEdit
+          Left = 2
+          Top = 152
+          Width = 466
+          Height = 21
+          TabOrder = 1
+          OnKeyDown = Edit1KeyDown
+        end
+      end
+    end
+    object TabSheet2: TTabSheet
+      Caption = 'Einstellungen'
+      ImageIndex = 1
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
+      object GroupBox1: TGroupBox
+        Left = 0
+        Top = 0
+        Width = 470
+        Height = 177
+        Align = alClient
+        TabOrder = 0
+        object Label1: TLabel
+          Left = 48
+          Top = 24
+          Width = 28
+          Height = 13
+          Caption = 'Nick :'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'MS Sans Serif'
+          Font.Style = []
+          ParentFont = False
+        end
+        object Label2: TLabel
+          Left = 33
+          Top = 52
+          Width = 43
+          Height = 13
+          Caption = 'Alt-Nick :'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'MS Sans Serif'
+          Font.Style = []
+          ParentFont = False
+        end
+        object Label3: TLabel
+          Left = 22
+          Top = 80
+          Width = 54
+          Height = 13
+          Caption = 'Realname :'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'MS Sans Serif'
+          Font.Style = []
+          ParentFont = False
+        end
+        object Label4: TLabel
+          Left = 45
+          Top = 108
+          Width = 31
+          Height = 13
+          Caption = 'eMail :'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'MS Sans Serif'
+          Font.Style = []
+          ParentFont = False
+        end
+        object Label5: TLabel
+          Left = 39
+          Top = 136
+          Width = 37
+          Height = 13
+          Caption = 'Server :'
+        end
+        object Label6: TLabel
+          Left = 207
+          Top = 136
+          Width = 3
+          Height = 13
+          Caption = ':'
+        end
+        object Edit2: TEdit
+          Left = 80
+          Top = 20
+          Width = 121
+          Height = 21
+          TabOrder = 0
+          Text = 'Edit2'
+        end
+        object Edit3: TEdit
+          Left = 80
+          Top = 48
+          Width = 121
+          Height = 21
+          TabOrder = 1
+          Text = 'Edit3'
+        end
+        object Edit4: TEdit
+          Left = 80
+          Top = 76
+          Width = 121
+          Height = 21
+          TabOrder = 2
+          Text = 'Edit4'
+        end
+        object Edit5: TEdit
+          Left = 80
+          Top = 104
+          Width = 121
+          Height = 21
+          TabOrder = 3
+          Text = 'Edit5'
+        end
+        object Edit6: TEdit
+          Left = 80
+          Top = 132
+          Width = 121
+          Height = 21
+          TabOrder = 4
+          Text = 'Edit6'
+        end
+        object Edit7: TEdit
+          Left = 216
+          Top = 132
+          Width = 57
+          Height = 21
+          TabOrder = 5
+          Text = 'Edit8'
+        end
+        object Button1: TButton
+          Left = 312
+          Top = 128
+          Width = 75
+          Height = 25
+          Caption = #220'bernehmen'
+          TabOrder = 6
+        end
+        object Button2: TButton
+          Left = 384
+          Top = 128
+          Width = 75
+          Height = 25
+          Caption = 'Abbrechen'
+          TabOrder = 7
+        end
+      end
+    end
+  end
+  object Button3: TButton
+    Left = 340
+    Top = 7
+    Width = 75
+    Height = 25
+    Caption = 'Button3'
+    TabOrder = 2
+    OnClick = Button3Click
+  end
+  object cs: TClientSocket
+    Active = False
+    ClientType = ctNonBlocking
+    Port = 0
+    OnConnect = csConnect
+    OnDisconnect = csDisconnect
+    OnRead = csRead
+    OnError = csError
+    Left = 8
+    Top = 408
+  end
+  object Timer1: TTimer
+    Enabled = False
+    Left = 48
+    Top = 408
+  end
+  object MainMenu1: TMainMenu
+    Left = 224
+    Top = 64
+    object Main1: TMenuItem
+      Caption = 'Main'
+      object Start1: TMenuItem
+        Caption = 'Start'
+        OnClick = Start1Click
+      end
+      object Stop1: TMenuItem
+        Caption = 'Stop'
+        OnClick = Stop1Click
+      end
+      object N1: TMenuItem
+        Caption = '-'
+      end
+      object Exit1: TMenuItem
+        Caption = 'Exit'
+      end
+    end
+    object N2: TMenuItem
+      Caption = '?'
+      object About1: TMenuItem
+        Caption = 'About'
+      end
+    end
+  end
+end

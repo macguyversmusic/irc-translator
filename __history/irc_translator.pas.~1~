@@ -1,0 +1,211 @@
+unit irc_translator;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, StdCtrls, ComCtrls, ExtCtrls, Menus, ScktComp,token,
+  IdBaseComponent, IdComponent, IdTCPConnection, IdTCPClient, IdHTTP,
+  IdSSLOpenSSL;
+
+type
+  TForm1 = class(TForm)
+    cs: TClientSocket;
+    Timer1: TTimer;
+    StatusBar1: TStatusBar;
+    MainMenu1: TMainMenu;
+    Main1: TMenuItem;
+    Start1: TMenuItem;
+    Stop1: TMenuItem;
+    N1: TMenuItem;
+    Exit1: TMenuItem;
+    N2: TMenuItem;
+    About1: TMenuItem;
+    PageControl1: TPageControl;
+    TabSheet1: TTabSheet;
+    TabSheet2: TTabSheet;
+    Panel1: TPanel;
+    RichEdit1: TRichEdit;
+    Edit1: TEdit;
+    GroupBox1: TGroupBox;
+    Label1: TLabel;
+    Label2: TLabel;
+    Label3: TLabel;
+    Label4: TLabel;
+    Label5: TLabel;
+    Edit2: TEdit;
+    Edit3: TEdit;
+    Edit4: TEdit;
+    Edit5: TEdit;
+    Edit6: TEdit;
+    Label6: TLabel;
+    Edit7: TEdit;
+    Button1: TButton;
+    Button2: TButton;
+    Button3: TButton;
+    procedure FormCreate(Sender: TObject);
+    procedure csError(Sender: TObject; Socket: TCustomWinSocket;
+      ErrorEvent: TErrorEvent; var ErrorCode: Integer);
+    procedure csDisconnect(Sender: TObject; Socket: TCustomWinSocket);
+    procedure csConnect(Sender: TObject; Socket: TCustomWinSocket);
+    procedure csRead(Sender: TObject; Socket: TCustomWinSocket);
+    procedure Start1Click(Sender: TObject);
+    procedure Stop1Click(Sender: TObject);
+    procedure Edit1KeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure Button3Click(Sender: TObject);
+  private
+    { Private-Deklarationen }
+  public
+    Procedure AddLog(logstring:String);
+    Function timestamp:String;
+    Procedure ircparse(data:String);
+    { Public-Deklarationen }
+  end;
+
+var
+  Form1: TForm1;
+
+implementation
+
+{$R *.dfm}
+
+Function TForm1.timestamp;
+Begin
+ timestamp:=TimeToStr(now);
+end;
+
+procedure TForm1.AddLog(logstring:String);
+Begin
+ RichEdit1.Lines.Add('['+TimeStamp+'] '+logstring);
+end;
+
+procedure TForm1.FormCreate(Sender: TObject);
+begin
+ Addlog('zonk*Bot started...');
+end;
+
+procedure TForm1.csError(Sender: TObject; Socket: TCustomWinSocket;
+  ErrorEvent: TErrorEvent; var ErrorCode: Integer);
+begin
+Addlog('Something wrong?');
+errorcode:=0;
+end;
+
+procedure TForm1.csDisconnect(Sender: TObject; Socket: TCustomWinSocket);
+begin
+Addlog('Disconnected from server');
+end;
+
+procedure TForm1.Button3Click(Sender: TObject);
+
+var
+https: TIdHTTP;
+URL: string;
+param:tstringlist;
+ReturnedPage: string;
+SSLIOHandler: TIdSSLIOHandlerSocketOpenSSL;
+begin
+param := tstringlist.Create;
+param.Clear;
+param.Add('client_id='+'');
+param.Add('client_secret ='+'');
+param.Add('scope='+'');
+param.Add('grant_type='+'');
+
+SSLIOHandler:= TIdSSLIOHandlerSocketOpenSSL.Create;
+URL := 'https://datamarket.accesscontrol.windows.net/v2/OAuth2-13';
+https := TIdHTTP.Create(nil);
+try
+https.IOHandler := SSLIOHandler;
+ReturnedPage:= https.Post(URL, param);
+richedit1.Lines.Add(ReturnedPage);
+finally
+https.Free;
+SSLIOHandler.Free;
+end;
+end;
+
+procedure TForm1.csConnect(Sender: TObject; Socket: TCustomWinSocket);
+begin
+Addlog('Connected...');
+Socket.SendText('USER z0nky blub bla blub'+#10);
+Socket.Sendtext('NICK z0nky'+#10);
+end;
+
+Procedure TForm1.ircparse(data:String);
+var       content:String;
+    tmp,tmp2,tmp3:String;
+            index:Integer;
+Begin
+ lowercase(data);
+ Addlog(data);
+ if data[1]=':' then                   // servermeldungen, msgs usw.
+        Begin
+         Tmp := GetFirstToken(Data);
+         Tmp2 := GetNextToken;
+         Tmp3 := GetRemainingTokens;
+         delete(Tmp, 1, 1);
+         index := pos('!', Tmp);
+         if Index > 0 then
+           begin
+           end;
+        end
+         else                         // steuercommands wie ping
+        Begin
+         if lowercase(GetFirstToken(data)) = 'ping' then
+          begin
+           Addlog('*** PING PONG');
+           Content := GetRemainingTokens;
+           cs.Socket.SendText('PONG '+Content+#10#13);
+           cs.Socket.SendText('JOIN #obscurity-board'+#10#13);
+          end;
+        end;
+end;
+
+procedure TForm1.csRead(Sender: TObject; Socket: TCustomWinSocket);
+var s,temp:String;
+    i:Integer;
+begin
+ s:=Socket.ReceiveText;
+ while(pos(#10,s)<>0) do          // in einzelne zeilen zerlegen
+  Begin
+   temp:=copy(s,1,pos(#10,s)-1);
+   delete(s,1,pos(#10,s));        // "ausgeschnittene" zeile löschen
+   ircparse(temp);                // zeilen uebergeben zum parsen
+  end; 
+end;
+
+procedure TForm1.Start1Click(Sender: TObject);
+begin
+cs.Host:='irc.euirc.net';
+cs.Port:=6667;
+cs.Active:=true;
+end;
+
+procedure TForm1.Stop1Click(Sender: TObject);
+begin
+cs.Socket.SendText('QUIT blub');
+if cs.Active=true then
+ cs.Active:=false;
+end;
+
+procedure TForm1.Edit1KeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+var s:String;
+begin
+s:=Edit1.Text;
+if Key=VK_RETURN then
+ Begin
+  if s[1]='/' then
+   Begin
+    // aliase hier... evtl aus konfig datei laden?
+   end else
+    Begin
+     cs.socket.sendtext(Edit1.Text+#10);     // raw senden
+    end;
+  Edit1.Text:='';  
+ end;
+end;
+
+end.
